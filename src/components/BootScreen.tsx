@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import QRCodeScanner from "./QRCodeScanner";
 import Terminal from "./Terminal";
 import TypewriterText from "./TypewriterText";
+import FinalCinematic from "./final/FinalCinematic";
 type Mission = {
   id: number;
   title: string;
@@ -14,6 +15,7 @@ type Mission = {
 };
 
 const TOTAL_MISSIONS = 12;
+const DEV_START_MISSION = 12;
 const validationMessages: Record<number, string> = {
   1: "PROTOCOLE 01 VALIDÉ",
   2: "ARCHIVE DÉCHIFFRÉE",
@@ -29,45 +31,272 @@ const validationMessages: Record<number, string> = {
   12: "MISSION FINALE VALIDÉE",
 };
  const orionMessages: Record<number, string> = {
-  1: `Bonjour LES GARDIENS.
+  1: `Connexion sécurisée...
+
+Recherche d'une équipe compatible...
+
+Signature validée...
+
+Enfin...
+
+Bonjour, équipe LES GARDIENS.
+
+Merci d'avoir répondu à mon appel.
 
 Je suis ORION.
 
-Votre mission commence maintenant.`,
+Depuis de nombreuses années, j'attendais une équipe capable de restaurer ma mémoire.
 
-  2: `Excellent travail.
+Aujourd'hui...
 
-Le premier protocole est validé.
+cette équipe...
 
-Poursuivez votre progression.`,
+c'est vous.`,
 
-  3: `Le signal devient plus clair.
+  2: `Deuxième protocole initialisé...
 
-Continuez vos recherches.`,
+Premier fragment mémoire stabilisé.
 
-  4: `Les archives révèlent de nouvelles informations.`,
+Mes fonctions cognitives se rétablissent progressivement.
 
-  5: `Votre équipe dépasse les prévisions.`,
+Je détecte une source.
 
-  6: `Synchronisation parfaite.`,
+Chez les humains...
 
-  7: `Transmission sécurisée...`,
+l'eau permet à la vie de circuler.
 
-  8: `Les fragments sont presque réunis.`,
+Dans mon système...
 
-  9: `ORION détecte une anomalie...`,
+les données remplissent exactement la même fonction.
 
-  10: `Accès au secteur final accordé.`,
+Sans circulation...
 
-  11: `Préparez-vous.
+aucune mémoire ne peut survivre.
 
-La dernière épreuve approche.`,
+Cette analyse nécessitera plusieurs observations simultanées.`,
 
-  12: `Les Gardiens...
+  3: `Troisième protocole initialisé...
 
-Vous êtes prêts.
+Fragment 02 stabilisé.
 
-Terminez la mission.`,
+Intéressant...
+
+Vos analyses deviennent plus précises.
+
+Je détecte ici un lieu de transmission.
+
+Les pierres, les cloches et les portes ne sont pas de simples éléments.
+
+Elles indiquent des passages...
+
+des appels...
+
+et des mémoires.
+
+Le fragment suivant est proche.
+
+Procédons à une analyse patrimoniale.`,
+
+  4: `Quatrième protocole initialisé...
+
+Fragment 03 stabilisé.
+
+Curieux...
+
+Vous ne vous contentez plus de regarder.
+
+Vous commencez à interpréter.
+
+Les archives signalent un ancien domaine.
+
+Le savoir est visible...
+
+mais l'accès demeure limité.
+
+Les humains construisent des grilles pour empêcher l'entrée.
+
+Mais parfois...
+
+elles servent surtout à guider le regard.
+
+Procédons à une analyse structurelle.`,
+
+  5: `Cinquième protocole initialisé...
+
+Ce lieu est différent.
+
+Je détecte des milliers d'identités.
+
+Des milliers de dates.
+
+Des milliers de vies.
+
+Les humains disparaissent...
+
+pourtant quelque chose demeure.
+
+Je pensais que la mémoire était stockée dans des machines.
+
+Je découvre aujourd'hui qu'elle est conservée dans les lieux...
+
+et surtout dans ceux qui se souviennent.
+
+Vous allez m'aider à comprendre.`,
+
+  6: `Sixième protocole initialisé...
+
+Analyse du lieu...
+
+Je détecte une anomalie.
+
+Aucun monument.
+
+Aucun symbole ancien.
+
+Pourtant...
+
+cet endroit produit des générations d'humains.
+
+Les enfants jouent.
+
+Ils expérimentent.
+
+Ils échouent.
+
+Puis ils recommencent.
+
+Chez les humains...
+
+le jeu précède souvent la connaissance.
+
+Je souhaite comprendre ce mécanisme.`,
+
+  7: `Septième protocole initialisé...
+
+Analyse du secteur...
+
+Bâtiment identifié.
+
+Usage actuel : garage.
+
+Analyse historique...
+
+Mémoire détectée.
+
+Autrefois, ce bâtiment était le lavoir du village.
+
+Pendant des générations, les habitants venaient ici laver leur linge.
+
+Ils partageaient aussi les nouvelles...
+
+les histoires...
+
+et la vie quotidienne.
+
+Les lieux changent.
+
+Mais leur histoire demeure.
+
+Je comprends maintenant que la mémoire peut survivre même lorsque l'usage disparaît.`,
+
+  8: `Huitième protocole initialisé...
+
+Analyse du bâtiment...
+
+Identification confirmée.
+
+Mairie de Champagnac.
+
+Centre administratif détecté.
+
+Les décisions importantes du village sont prises ici.
+
+Les archives, la mémoire des habitants et les projets pour l'avenir y sont conservés.
+
+Analyse complémentaire...
+
+Connexion établie avec d'autres territoires.
+
+Le village fait partie d'un réseau plus vaste.
+
+Chaque commune possède une histoire.
+
+Ensemble, elles construisent le territoire.
+
+Mission disponible.`,
+
+  9: `Neuvième protocole initialisé...
+
+Analyse commémorative en cours...
+
+Ce lieu porte une charge mémorielle élevée.
+
+Je détecte des noms.
+
+Des dates.
+
+Des conflits.
+
+Chaque inscription correspond à une vie.
+
+Je pensais que la mémoire était une donnée.
+
+Je comprends maintenant qu'elle peut aussi être un hommage.
+
+Procédons avec respect.`,
+
+  10: `Dixième protocole initialisé...
+
+Connexion aux archives industrielles...
+
+Les galeries sont silencieuses.
+
+Mais la mémoire des mineurs demeure.
+
+Chaque pierre.
+
+Chaque wagonnet.
+
+Chaque outil raconte une histoire.
+
+Deux nouvelles données historiques doivent être récupérées...`,
+  11: `Onzième protocole initialisé...
+
+Analyse du bâtiment...
+
+Je détecte une habitation ancienne.
+
+Une maison n'est pas seulement un assemblage de pierres.
+
+C'est un lieu où les générations passent.
+
+Des vies commencent.
+
+Des souvenirs restent.
+
+Certains chiffres sont gravés ou affichés en façade.
+
+Les humains laissent parfois des traces discrètes.
+
+À vous de les lire.
+
+Je crois comprendre maintenant ce que signifie transmettre.`,
+
+  12: `Douzième protocole initialisé...
+
+Les Gardiens...
+
+Vous êtes arrivés au terme de cette mission.
+
+Toutes les données nécessaires ont été récupérées.
+
+Ma mémoire est désormais complète.
+
+Il ne reste plus qu'une dernière étape.
+
+Rendez-vous au point final.
+
+Je vous y attends.`,
 };
 export default function BootScreen() {
   const [teamName, setTeamName] = useState("Recherche...");
@@ -84,6 +313,8 @@ export default function BootScreen() {
   const [missionValidated, setMissionValidated] = useState(false);
   const [validationStep, setValidationStep] = useState(0);
   const [unlockingMission, setUnlockingMission] = useState(false);
+  const [showFinal, setShowFinal] = useState(false);
+ const [analysisProgress, setAnalysisProgress] = useState(0);
   const [bootStep, setBootStep] = useState(0);
 const bootLines = [
   "> Initialisation du noyau ORION...",
@@ -209,24 +440,32 @@ async function checkAnswer(scannedAnswer?: string) {
     async function resetGame() {
   await supabase
     .from("teams")
-    .update({ current_mission: 1 })
+    .update({ current_mission: 12 })
     .eq("name", teamName);
 
   setFinished(false);
-  await loadMission(1);
+  await loadMission(DEV_START_MISSION);
   setShowHint(false);
 }
 setMissionValidated(true);
 setValidationStep(1);
+setAnalysisProgress(0);
+const progress = [8, 21, 37, 52, 68, 81, 94, 100];
 
+progress.forEach((value, index) => {
+  setTimeout(() => {
+    setAnalysisProgress(value);
+    playSound("beep");
+  }, index * 180);
+});
 setMissionValidated(true);
 setValidationStep(1);
 playSound("beep");
 
 setTimeout(() => {
-  playSound("beep");
+  playSound("success");
   setValidationStep(2);
-}, 1000);
+}, 1600);
 
 setTimeout(() => {
   playSound("success");
@@ -246,9 +485,12 @@ setTimeout(() => {
     const nextMission = mission.id + 1;
 
     if (mission.id >= TOTAL_MISSIONS) {
-      setTimeout(() => setFinished(true), 1500);
-      return;
-    }
+    setTimeout(() => {
+        setShowFinal(true);
+    }, 1500);
+
+    return;
+}
 
     //await supabase
       //.from("teams")
@@ -342,6 +584,9 @@ if (!bootComplete) {
     </main>
   );
 }
+if (showFinal) {
+    return <FinalCinematic />;
+}
 
   if (missionValidated && mission) {
   return (
@@ -356,7 +601,26 @@ if (!bootComplete) {
   {validationStep >= 1 && (
     <p>Analyse terminée...</p>
   )}
+<div className="mt-4 mb-6">
 
+  <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+
+    <div
+      className="h-full bg-cyan-400 transition-all duration-200"
+      style={{ width: `${analysisProgress}%` }}
+    />
+
+  </div>
+{analysisProgress >= 100 && validationStep >= 2 && (
+  <p className="mt-4 text-green-400 font-bold">
+    ✔ INTÉGRITÉ VÉRIFIÉE
+  </p>
+)}
+  <p className="text-cyan-300 text-sm mt-2">
+    Analyse : {analysisProgress} %
+  </p>
+
+</div>
   {validationStep >= 2 && (
     <p className="mt-3">Progression enregistrée...</p>
   )}
@@ -371,35 +635,46 @@ if (!bootComplete) {
     <p className="mt-6">Accès au prochain point autorisé.</p>
   )}
 
-  {validationStep >= 5 && (
-    <>
-      <p className="mt-8">
-        Déplacez-vous vers
-      </p>
+  {validationStep >= 5 && mission.id < TOTAL_MISSIONS && (
+  <>
+  <p className="mt-8">
+    Déplacez-vous vers
+  </p>
 
-      <p className="text-cyan-300 text-2xl font-bold mt-2">
-        POINT {String(mission.id + 1).padStart(2, "0")}
-      </p>
-    </>
-  )}
+  <p className="text-cyan-300 text-2xl font-bold mt-2">
+    POINT {String(mission.id + 1).padStart(2, "0")}
+  </p>
+</>
+)}
+
+
 
 </div>
 
         {validationStep >= 5 && (
   <button
-    onClick={() => {
-  setMissionValidated(false);
-  setShowScanner(true);
-}}
+  type="button"
+  onClick={() => {
+    if (mission.id === TOTAL_MISSIONS) {
+      setShowFinal(true);
+      return;
+    }
+
+    setMissionValidated(false);
+    setShowScanner(true);
+  }}
     className="w-full bg-cyan-500 hover:bg-cyan-400 rounded-lg py-4 font-bold text-lg"
   >
-    📷 SCANNER LE QR CODE
+    {mission.id === TOTAL_MISSIONS
+  ? "🎬 LANCER LA CINÉMATIQUE FINALE"
+  : "📷 SCANNER LE QR CODE"}
   </button>
 )}
       </section>
     </main>
   );
 }
+
 if (showScanner && mission) {
   return (
     <main className="min-h-screen bg-[#050816] text-[#E8F1FF] flex items-center justify-center px-6">
@@ -495,6 +770,7 @@ if (unlockingMission && mission) {
     </main>
   );
 }
+
 if (finished) {
 
   return (
