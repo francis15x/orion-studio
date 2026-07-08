@@ -585,7 +585,7 @@ if (!bootComplete) {
   );
 }
 if (showFinal) {
-    return <FinalCinematic />;
+    return <FinalCinematic teamName={teamName} />;
 }
 
   if (missionValidated && mission) {
