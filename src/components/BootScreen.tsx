@@ -15,7 +15,7 @@ type Mission = {
 };
 
 const TOTAL_MISSIONS = 12;
-const DEV_START_MISSION = 12;
+const DEV_START_MISSION = 1;
 const validationMessages: Record<number, string> = {
   1: "PROTOCOLE 01 VALIDÉ",
   2: "ARCHIVE DÉCHIFFRÉE",
@@ -299,7 +299,7 @@ Rendez-vous au point final.
 Je vous y attends.`,
 };
 export default function BootScreen() {
-  const [teamName, setTeamName] = useState("Recherche...");
+  const [teamName, setTeamName] = useState("");
   const [mission, setMission] = useState<Mission | null>(null);
   const [started, setStarted] = useState(false);
   const [bootComplete, setBootComplete] = useState(false);
@@ -344,13 +344,18 @@ const bootLines = [
 
   useEffect(() => {
     async function loadData() {
-      const { data: teamData } = await supabase
-        .from("teams")
-        .select("name, current_mission")
-        .limit(1);
+      const savedTeam = localStorage.getItem("orion_team");
 
-      if (teamData && teamData.length > 0) {
-        setTeamName(teamData[0].name);
+if (!savedTeam) return;
+
+const { data: teamData } = await supabase
+  .from("teams")
+  .select("name, current_mission")
+  .eq("name", savedTeam)
+  .single();
+
+if (teamData) {
+  setTeamName(teamData.name);
         const params = new URLSearchParams(window.location.search);
 const qrCode = params.get("qr");
 
@@ -367,7 +372,7 @@ if (qrCode) {
   }
 }
 
-await loadMission(teamData[0].current_mission || 1);
+await loadMission(teamData.current_mission);
       }
     }
 
@@ -433,18 +438,36 @@ async function checkAnswer(scannedAnswer?: string) {
   mission.answer.trim().toLowerCase()
 ) {
       playSound("error");
-      setMessage("❌ Mauvaise réponse. Réessayez.");
-      return;
-    }
 
+const savedTeam = localStorage.getItem("orion_team") || teamName;
+
+await supabase.rpc("increment_team_errors", {
+  team_name: savedTeam,
+});
+
+setMessage("❌ Mauvaise réponse. Réessayez.");
+return;
+    }
+const savedTeam = localStorage.getItem("orion_team") || teamName;
+
+const { data, error } = await supabase
+  .from("teams")
+  .update({
+    current_mission: mission.id,
+    status: "en_cours",
+  })
+  .eq("name", savedTeam)
+  .select();
+
+console.log("MISSION VALIDÉE UPDATE", savedTeam, mission.id, data, error);
     async function resetGame() {
   await supabase
     .from("teams")
-    .update({ current_mission: 12 })
+    .update({ current_mission: 1 })
     .eq("name", teamName);
 
   setFinished(false);
-  await loadMission(DEV_START_MISSION);
+  await loadMission(1);
   setShowHint(false);
 }
 setMissionValidated(true);
@@ -492,14 +515,7 @@ setTimeout(() => {
     return;
 }
 
-    //await supabase
-      //.from("teams")
-      //.update({ current_mission: nextMission })
-      //.eq("name", teamName);
-
-    //setTimeout(() => {
-      //loadMission(nextMission);
-    //}, 1500);
+    
   }
 
   const progress = mission ? (mission.id / TOTAL_MISSIONS) * 100 : 0;
@@ -722,12 +738,19 @@ if (showScanner && mission) {
               playSound("unlock");
 
               setTimeout(async () => {
-                await loadMission(mission.id + 1);
+                const nextMission = mission.id + 1;
 
-                await supabase
-                  .from("teams")
-                  .update({ current_mission: mission.id + 1 })
-                  .eq("name", teamName);
+const savedTeam = localStorage.getItem("orion_team") || teamName;
+
+await supabase
+  .from("teams")
+  .update({
+    current_mission: nextMission,
+    status: "en_cours",
+  })
+  .eq("name", savedTeam);
+
+await loadMission(nextMission);
 
                 setUnlockingMission(false);
                 setMessage("");
@@ -850,7 +873,15 @@ if (finished) {
 
                   {!showHint ? (
   <button
-    onClick={() => setShowHint(true)}
+    onClick={async () => {
+  const savedTeam = localStorage.getItem("orion_team") || teamName;
+
+  await supabase.rpc("increment_team_hints", {
+    team_name: savedTeam,
+  });
+
+  setShowHint(true);
+}}
     className="mt-6 w-full border border-cyan-400 text-cyan-300 rounded-lg py-3 font-bold hover:bg-cyan-950/50"
   >
     DEMANDER UN INDICE

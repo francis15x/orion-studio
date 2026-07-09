@@ -1,6 +1,6 @@
 "use client";
 
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 import { useEffect } from "react";
 
 type QRCodeScannerProps = {
@@ -9,27 +9,37 @@ type QRCodeScannerProps = {
 
 export default function QRCodeScanner({ onScan }: QRCodeScannerProps) {
   useEffect(() => {
-    const scanner = new Html5QrcodeScanner(
-      "qr-reader",
-      {
-        fps: 10,
-        qrbox: 250,
-      },
-      false
-    );
+    const html5QrCode = new Html5Qrcode("qr-reader");
 
-    scanner.render(
-      (decodedText) => {
-        onScan(decodedText);
-        scanner.clear();
-      },
-      () => {}
-    );
+    html5QrCode
+      .start(
+        {
+          facingMode: "environment", // caméra arrière
+        },
+        {
+          fps: 10,
+          qrbox: {
+            width: 250,
+            height: 250,
+          },
+        },
+        (decodedText) => {
+          onScan(decodedText);
+          html5QrCode.stop();
+        },
+        () => {}
+      )
+      .catch(console.error);
 
     return () => {
-      scanner.clear().catch(() => {});
+      html5QrCode.stop().catch(() => {});
     };
   }, [onScan]);
 
-  return <div id="qr-reader" className="mt-4 bg-white text-black rounded-lg p-2" />;
+  return (
+    <div
+      id="qr-reader"
+      className="mt-4 rounded-lg overflow-hidden"
+    />
+  );
 }
