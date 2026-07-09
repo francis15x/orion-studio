@@ -36,9 +36,9 @@ export default function QRCodeScanner({ onScan }: QRCodeScannerProps) {
       .catch(console.error);
 
     return () => {
-      scanner.stop().catch(() => {});
-      scanner.clear().catch(() => {});
-    };
+  scanner.stop().catch(() => {});
+  scanner.clear();
+};
   }, [onScan]);
 
   return <div id="qr-reader" className="mt-4 rounded-lg overflow-hidden" />;
