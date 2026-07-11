@@ -181,9 +181,7 @@ export default function AdminPage() {
                       {team.hints_count || 0}
                     </td>
 
-                    <td className="p-4 font-black text-cyan-400">
-                      {team.final_score || 0}
-                    </td>
+                    
 
                     <td className="p-4">
                       {team.completed_at ? (
@@ -202,3 +200,4 @@ export default function AdminPage() {
     </main>
   );
 }
+

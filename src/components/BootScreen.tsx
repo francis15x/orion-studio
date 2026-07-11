@@ -316,6 +316,7 @@ export default function BootScreen() {
   const [showFinal, setShowFinal] = useState(false);
  const [analysisProgress, setAnalysisProgress] = useState(0);
   const [bootStep, setBootStep] = useState(0);
+  
 const bootLines = [
   "> Initialisation du noyau ORION...",
   "> Vérification des protocoles...",
