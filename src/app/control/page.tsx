@@ -10,6 +10,7 @@ import LiveRanking from "@/components/control/LiveRanking";
 import StatCard from "@/components/control/StatCard";
 import TeamCard from "@/components/control/TeamCard";
 import TeamModal from "@/components/control/TeamModal";
+import ResultsPanel from "@/components/control/ResultsPanel";
 
 import type { Filter, Team } from "@/components/control/types";
 import {
@@ -277,6 +278,7 @@ export default function OrionControlCenter() {
         </div>
 
         <LiveRanking teams={ranking} now={now} />
+        <ResultsPanel teams={teams} now={now} />
 
         <FilterBar
           filter={filter}
